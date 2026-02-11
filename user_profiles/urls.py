@@ -5,7 +5,7 @@ from user_profiles.views import (
     # activateConfirm,
     accountActivateView,
     GetCSRFToken, LoginView, LogoutView,
-    testSessionView
+    testSessionView, quizView
 )
 urlpatterns = [
     path('auth/registration/', RegistrationView.as_view(), name='register'),
@@ -14,5 +14,6 @@ urlpatterns = [
     path('auth/csrf_cookie/', GetCSRFToken.as_view(), name='csrf_cookie'),
     path('auth/signin/', LoginView.as_view(), name='signin'),
     path('auth/logout/', LogoutView.as_view(), name='logout'),
-    path('generate/', testSessionView.as_view(), name='generate')
+    path('generate/', testSessionView.as_view(), name='generate'),
+    path('quiz-session/<str:sessionId>/', quizView.as_view(), name='quiz-session')
 ]

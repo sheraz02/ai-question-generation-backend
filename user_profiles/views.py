@@ -4,7 +4,7 @@ from rest_framework.permissions import (
     )
 from rest_framework.response import Response
 from user_profiles.serializers import (
-    UserSerializer, TestSessionSerializer
+    UserSerializer, TestSessionSerializer, UserRegisterSerializer, QuizSerializer
     )
 from django.views.decorators.csrf import (
     ensure_csrf_cookie,
@@ -39,7 +39,9 @@ class RegistrationView(APIView):
 
     def post(self, request):
         try:
-            serializer = UserSerializer(data=request.data)
+            serializer = UserRegisterSerializer(data=request.data)
+
+            print(request.data)
             
             if serializer.is_valid():
                 user = serializer.save()
@@ -51,7 +53,7 @@ class RegistrationView(APIView):
                 token = default_token_generator.make_token(user)
 
                 # activation_path = reverse('activate', kwargs={'uid': uid, 'token':token})
-                activation_url = f"{settings.SITE_DOMAIN}/signup/activate?uid={uid}&token={token}/"
+                activation_url = f"{settings.SITE_DOMAIN}/signup/activate?uid={uid}&token={token}"
 
                 # Send activation email (replace with actual email sending logic)
                 try:
@@ -70,7 +72,7 @@ class RegistrationView(APIView):
             format_errors = {field: messages[0] for field, messages in errors.items()}
             return Response({"error": format_errors}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response({'message': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'message': f'Internal server error: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     
 
@@ -168,7 +170,6 @@ class testSessionView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         user = request.user
-        print(user)
         topicsName = request.data.get('topicName')
         difficultyLevel = request.data.get('difficultyLevel')
         noOfQuestions = request.data.get('noOfQuestions')
@@ -178,8 +179,11 @@ class testSessionView(APIView):
         
         generateTestSessionClient = GeneratorClient()
         try:
-            modelResponse = generateTestSessionClient.call_gemini(prompt=topicsName, questions=noOfQuestions, difficulty_level=difficultyLevel)
-            print(modelResponse)
+            modelResponse = generateTestSessionClient.call_gemini(
+                prompt=topicsName, 
+                questions=noOfQuestions, 
+                difficulty_level=difficultyLevel)
+
             if "error" in modelResponse:
                 return Response({"error": modelResponse["error"]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
@@ -192,7 +196,21 @@ class testSessionView(APIView):
             )
             serializer = TestSessionSerializer(test_session)
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"sessionId": serializer.data["sessionId"]}, status=status.HTTP_201_CREATED)
           
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class quizView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, sessionId):
+        try:
+            # Retrieve the TestSession object using the sessionId
+            test_session = TestSession.objects.get(sessionId=sessionId)
+        except TestSession.DoesNotExist:
+            return Response({"error": "Test session not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = QuizSerializer(test_session)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -7,7 +7,10 @@ PDFfiles/
 output/
 .env
 
+chroma_db/
+
 test_api.py
+pdf-files/
 
 # Compiled Java class files
 *.class

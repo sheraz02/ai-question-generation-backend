@@ -10,18 +10,29 @@ load_dotenv()
 
 
 
-def question_generation_prompt(prompt_text: str, num_questions: int = 5, difficulty: str = "medium") -> str:
+def question_generation_prompt(topic: str, num_questions: int = 5, difficulty: str = "medium") -> str:
+    """
+    Generates a prompt for an LLM to create multiple-choice questions on a given topic.
+
+    Args:
+        topic (str): The topic for which questions should be generated.
+        num_questions (int, optional): Number of questions to generate. Defaults to 5.
+        difficulty (str, optional): Difficulty level ("easy", "medium", "hard"). Defaults to "medium".
+
+    Returns:
+        str: The fully formatted prompt.
+    """
     prompt = f"""
         You are an expert exam-question generator.
 
-        Create exactly {num_questions} high-quality multiple-choice questions on the topic below:
-        Topic: {prompt_text}
+        Create exactly {num_questions} high-quality multiple-choice questions on the following topic:
+        Topic: {topic}
         Difficulty level: {difficulty}
 
         Your output MUST follow these rules EXACTLY:
 
         1. Output ONLY valid JSON (no explanation, no markdown, no text before or after).
-        2. JSON structure must match the schema.
+        2. JSON structure must strictly follow the provided schema.
 
         3. Question requirements:
         - Must be clear, academically correct, and unambiguous.
@@ -39,19 +50,33 @@ def question_generation_prompt(prompt_text: str, num_questions: int = 5, difficu
         - Must NOT mention distractors.
 
         6. IDs:
-        - Generate ids (example: "1, 2, 3").
+        - Generate sequential integer ids starting from 1.
+
+        7. Related topic:
+        - Write topic name to which, question is related
+
+        8. Hint:
+        - Must provide a useful, brief clue to aid in answering.
 
         Return ONLY the JSON. Ensure it is syntactically valid.
         """
     return prompt
 
 
+
 def build_schema() -> Dict[str, Any]:
+    """
+    Returns a JSON schema for validating multiple-choice questions.
+
+    Returns:
+        Dict[str, Any]: The JSON schema.
+    """
     return {
         "type": "object",
         "properties": {
             "questions": {
                 "type": "array",
+                "minItems": 1,
                 "items": {
                     "type": "object",
                     "properties": {
@@ -59,17 +84,23 @@ def build_schema() -> Dict[str, Any]:
                         "question": {"type": "string"},
                         "choices": {
                             "type": "array",
+                            "minItems": 2,
                             "items": {"type": "string"}
                         },
-                        "correct_index": {"type": "integer"},
+                        "correct_index": {"type": "integer", "minimum": 0},
+                        "related_topic": {"type": "array"},
+                        "hint": {"type": "string"},
                         "explanation": {"type": "string"}
                     },
-                    "required": ["id", "question", "choices", "correct_index", "explanation"]
+                    "required": ["id", "question", "choices", "correct_index", "related_topic", "hint", "explanation"],
+                    "additionalProperties": False
                 }
             }
         },
-        "required": ["questions"]
+        "required": ["questions"],
+        "additionalProperties": False
     }
+
 
 
 class GeneratorClient:
@@ -93,7 +124,7 @@ class GeneratorClient:
         Use the LangChain ChatGoogleGenerativeAI wrapper and LangChain's structured-output helper
         to force JSON output matching build_schema().
         """
-        final_prompt = question_generation_prompt(prompt_text=prompt, num_questions=questions, difficulty=difficulty_level)
+        final_prompt = question_generation_prompt(topic=prompt, num_questions=questions, difficulty=difficulty_level)
 
         try:
             # create a structured model that enforces the json_schema method
