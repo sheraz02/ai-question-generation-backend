@@ -46,6 +46,7 @@ The accountActivateView view handles a JSON payload containing uid and token. Th
 
 **4.** If the user is not found in the database, the response will indicate __“User does not exist”__.
 
+<img width="1055" height="595" alt="activation-flow" src="https://github.com/user-attachments/assets/adea6452-39d2-46f8-a3eb-533de6b3d90f" />
 
 
 
