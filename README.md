@@ -34,7 +34,7 @@ Purpose: Enable developers to build RAG applications by providing an integrated 
   - `uid` (encoded user ID)
   - `token` (activation token)
 
-The accountActivateView view handles a JSON payload containing uid and token. The process works as follows:
+The `accountActivateView` view handles a JSON payload containing `uid` and `token`. The process works as follows:
 
 **1.** The view first checks if the payload is empty or if any required fields are missing.
 

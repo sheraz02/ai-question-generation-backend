@@ -139,7 +139,6 @@ class accountActivateView(APIView):
 @method_decorator(csrf_protect, name='dispatch')
 class LoginView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
         try:
             email = request.data.get('email')
