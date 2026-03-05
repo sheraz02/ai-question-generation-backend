@@ -15,38 +15,131 @@ Purpose: Enable developers to build RAG applications by providing an integrated 
 - `test_api.py` - test(s) present at repo root.
 
 
-# Account Registration Flow
-- Browser calls `GetCSRFToken` view to set CSRF cookie in the browser.
-- **User → Registration View:** The user submits registration data via a form.
-- **User Registration View:** will get data in `json` format.
-  - Validates input data.
-  - Creates a new user account in the database.
-  - `send_email` function will Email account verification link to the user.
-- **Account Created Successfully:** Confirms successful registration to the user.
-<img width="700" height="368" alt="registration-flow-diagram" src="https://github.com/user-attachments/assets/4220e9cc-a643-4bfa-bedd-8f06ead6d46d" />
+## API Routes Documentation
+The following endpoints handle user authentication, session generation, and quiz access.
+
+- GET `/auth/csrf_cookie/` - Retrieves and sets a CSRF token cookie required for secure form submissions and authenticated requests.
+
+- POST `/auth/registration/` - Registers a new user account using the provided user details.
+- POST `/auth/activate/` - Activates a newly registered user account using a verification token or code.
+- POST `/auth/signin/` - Authenticates a user and creates a login session using their credentials.
+- POST `/generate/` – Generates a new quiz session based on the provided parameters or topic.
+- GET `/quiz-session/<sessionId>/` – Retrieves the details and current state of a specific quiz session.
+- POST `/auth/logout/` – Logs out the authenticated user and invalidates the current session.
+
+### 1. User Registration
+**Endpoint**
+POST `/auth/registration/`
+
+**Description**
+- Registers a new user account.
+
+**Request Body Example**
+```json
+{
+  "email": "user@example.com",
+  "password": "your_password",
+  "username": "your_username"
+}
+```
+
+**Response**
+- 201 Created – User registered successfully
+- 400 Bad Request – Invalid input or user already exists
+
+### 2. Account Activation
+
+**Endpoint**
+POST `/auth/activate/`
+
+**Description**
+
+- Activates a user account using the activation token sent via email after registration.
+
+**Request Body Example**
+```json
+{
+  "uid": "user_id",
+  "token": "activation_token"
+}
+```
+**Response**
+
+- 200 OK – Account activated successfully
+- 400 Bad Request – Invalid or expired token
+
+### 3. Get CSRF Token
+
+**Endpoint**
+GET `/auth/csrf_cookie/`
+
+**Description**
+
+- Returns a CSRF token and sets it in cookies for secure authenticated requests.
+
+**Response**
+
+- 200 OK – CSRF cookie set successfully
+
+**4. User Login**
+
+**Endpoint**
+POST `/auth/signin/`
+
+Description
+- Authenticates a user and creates a login session.
+
+**Request Body Example**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "your_password"
+}
+```
+**Response**
+- 200 OK – Login successful
+- 401 Unauthorized – Invalid credentials
+
+### 5. User Logout
+**Endpoint** POST `/auth/logout/`
+
+**Description**
+- Logs the user out and clears the session.
+
+**Response**
+- 200 OK – Logout successful
+
+### 6. Generate Quiz Session
+
+**Endpoint**
+POST `/generate/`
+
+**Description**
+
+- Creates a new quiz session and returns a unique session ID.
+
+**Response Example**
+```json
+{
+  "sessionId": "abc123xyz"
+}
+```
+**Response**
+- 200 OK – Quiz session generated successfully
+
+### 7. Access Quiz Session
+
+**Endpoint**
+GET `/quiz-session/{sessionId}/`
+
+**Description**
+- Retrieves quiz data associated with a specific session.
+
+**Path Parameter**
 
 
-# Account Activation Flow
 
-#### User Receives Activation Link
-- After registration, the user receives an email containing an activation link.
-- The link includes two parameters:
-  - `uid` (encoded user ID)
-  - `token` (activation token)
-
-The `accountActivateView` view handles a JSON payload containing `uid` and `token`. The process works as follows:
-
-**1.** The view first checks if the payload is empty or if any required fields are missing.
-
-**2.** If all required data is present, it decodes the uid and checks whether the account is already activated.
-
-**3.** If the account is not yet activated, the view validates the token:
-   - If the token is invalid, the response will indicate __"Invalid token"__.
-   - If the token is valid, the user’s account status is updated to `is_active=True` and saved to the database. The response will indicate __“Account activated successfully”__.
-
-**4.** If the user is not found in the database, the response will indicate __“User does not exist”__.
-
-<img width="1055" height="595" alt="activation-flow" src="https://github.com/user-attachments/assets/adea6452-39d2-46f8-a3eb-533de6b3d90f" />
 
 
 
