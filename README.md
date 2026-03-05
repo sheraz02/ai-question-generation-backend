@@ -23,6 +23,7 @@ Purpose: Enable developers to build RAG applications by providing an integrated 
   - Creates a new user account in the database.
   - `send_email` function will Email account verification link to the user.
 - **Account Created Successfully:** Confirms successful registration to the user.
+<img width="700" height="437" alt="registration-flow-diagram" src="https://github.com/user-attachments/assets/0760c096-ac28-4b77-8a9c-a8ded598f48b" />
 
 
 ## Overview
