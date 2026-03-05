@@ -25,6 +25,29 @@ Purpose: Enable developers to build RAG applications by providing an integrated 
 - **Account Created Successfully:** Confirms successful registration to the user.
 
 
+# Account Activation Flow
+
+#### User Receives Activation Link
+- After registration, the user receives an email containing an activation link.
+- The link includes two parameters:
+  - `uid` (encoded user ID)
+  - `token` (activation token)
+
+The accountActivateView view handles a JSON payload containing uid and token. The process works as follows:
+
+**1.** The view first checks if the payload is empty or if any required fields are missing.
+
+**2.** If all required data is present, it decodes the uid and checks whether the account is already activated.
+
+**3.** If the account is not yet activated, the view validates the token:
+   - If the token is invalid, the response will indicate __"Invalid token"__.
+   - If the token is valid, the user’s account status is updated to `is_active=True` and saved to the database. The response will indicate __“Account activated successfully”__.
+
+**4.** If the user is not found in the database, the response will indicate __“User does not exist”__.
+
+
+
+
 ## Overview
 
 This project combines a Django REST/API backend with scripts to ingest, chunk, and retrieve content (PDFs and other documents) to support RAG-style functionality. The `user_profiles` app contains registration, activation email templates, and authentication/backends to integrate with the API.
