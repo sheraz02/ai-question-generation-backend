@@ -14,6 +14,17 @@ Purpose: Enable developers to build RAG applications by providing an integrated 
 - `requirements.txt` - Python dependencies.
 - `test_api.py` - test(s) present at repo root.
 
+
+# Account Registration Flow
+- Browser calls `GetCSRFToken` view to set CSRF cookie in the browser.
+- **User → Registration View:** The user submits registration data via a form.
+- **User Registration View:** will get data in `json` format.
+  - Validates input data.
+  - Creates a new user account in the database.
+  - `send_email` function will Email account verification link to the user.
+- **Account Created Successfully:** Confirms successful registration to the user.
+
+
 ## Overview
 
 This project combines a Django REST/API backend with scripts to ingest, chunk, and retrieve content (PDFs and other documents) to support RAG-style functionality. The `user_profiles` app contains registration, activation email templates, and authentication/backends to integrate with the API.
