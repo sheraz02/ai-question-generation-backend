@@ -27,11 +27,21 @@ from rest_framework import status
 from user_profiles.utils import send_activation_email
 from RAGpipelines.questionGeneratorPipeline import GeneratorClient
 
+
+
+
+
+
+
+
+
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class GetCSRFToken(APIView):
     permission_classes = [AllowAny]
     def get(self, request):
         return Response({"success": "CSRF cookie set"}, status=status.HTTP_200_OK)
+
+
 
 @method_decorator(csrf_protect, name='dispatch')
 class RegistrationView(APIView):
