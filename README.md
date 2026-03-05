@@ -62,6 +62,8 @@ GET `/auth/csrf_cookie/`
 
 - 200 OK – CSRF cookie set successfully
 
+<img width="1918" height="1018" alt="get-token" src="https://github.com/user-attachments/assets/2a6fe786-0036-46f6-8059-77b8d02872ae" />
+
 
 ### 2. User Registration
 **Endpoint**
@@ -82,6 +84,8 @@ POST `/auth/registration/`
 **Response**
 - 201 Created – User registered successfully
 - 400 Bad Request – Invalid input or user already exists
+
+<img width="1918" height="1020" alt="registeration" src="https://github.com/user-attachments/assets/b52f40d9-9902-4a4f-844d-fd9fafb6b436" />
 
 ### 3. Account Activation
 
@@ -104,6 +108,7 @@ POST `/auth/activate/`
 - 200 OK – Account activated successfully
 - 400 Bad Request – Invalid or expired token
 
+<img width="1918" height="1018" alt="activate-account" src="https://github.com/user-attachments/assets/5eeb24a6-4948-47c9-9978-1e6e629ac53f" />
 
 
 ### 4. User Login
@@ -126,6 +131,9 @@ Description
 - 200 OK – Login successful
 - 401 Unauthorized – Invalid credentials
 
+<img width="1918" height="1018" alt="login" src="https://github.com/user-attachments/assets/a0034c17-861b-4b38-9936-245bc96e1444" />
+
+
 ### 5. Generate Quiz Session
 
 **Endpoint**
@@ -144,6 +152,8 @@ POST `/generate/`
 **Response**
 - 200 OK – Quiz session generated successfully
 
+<img width="1918" height="1021" alt="quiz-generate" src="https://github.com/user-attachments/assets/874f6779-95b2-4c47-885c-1e991e420316" />
+
 
 ### 6. Access Quiz Session
 
@@ -154,6 +164,9 @@ GET `/quiz-session/{sessionId}/`
 - Retrieves quiz data associated with a specific session.
 
 **Path Parameter**
+
+<img width="1918" height="1021" alt="get-quiz" src="https://github.com/user-attachments/assets/c5558589-10ce-4bd7-abe5-031e26a7f897" />
+
 
 ### 7. User Logout
 **Endpoint** POST `/auth/logout/`
